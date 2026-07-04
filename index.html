@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ورود به کارتابل زائرین</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="center-page">
+    <div class="card login-card">
+      <div class="eyebrow">کاروان زیارتی</div>
+      <h1>کارتابل زائرین</h1>
+      <div class="subtitle">برای ورود، کد زائر و کد ملی خود را وارد کنید</div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="code">کد زائر</label>
+          <input class="input" id="code" inputmode="numeric" autocomplete="off" required>
+        </div>
+        <div class="field">
+          <label for="national">کد ملی</label>
+          <input class="input" id="national" inputmode="numeric" autocomplete="off" required>
+        </div>
+        <button class="btn btn-primary" type="submit" id="submitBtn">ورود</button>
+      </form>
+      <div class="error-box" id="errorBox"></div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    clearSession();
+    const form = document.getElementById('loginForm');
+    const errorBox = document.getElementById('errorBox');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      hideError(errorBox);
+      const code = document.getElementById('code').value.trim();
+      const national = document.getElementById('national').value.trim();
+      if (!code || !national) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'در حال بررسی...';
+      try {
+        const result = await api('login', { code, national });
+        if (!result.ok) {
+          showError(errorBox, result.message || 'ورود ناموفق بود');
+        } else {
+          saveSession(Object.assign({ role: result.role, token: result.token }, result.data || { code }));
+          location.href = result.role === 'admin' ? 'admin.html' : 'dashboard.html';
+        }
+      } catch (e) {
+        showError(errorBox, 'خطا در ارتباط با سرور. آدرس SCRIPT_URL را در config.js بررسی کنید.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'ورود';
+      }
+    });
+  </script>
+</body>
+</html>

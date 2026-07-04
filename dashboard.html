@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کارتابل زائر</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <h1>کارتابل زائر</h1>
+      <button class="btn btn-ghost" onclick="logout()">خروج</button>
+    </div>
+
+    <div class="card profile-card">
+      <img class="avatar" id="photo" src="" alt="عکس زائر" onerror="this.style.visibility='hidden'">
+      <div class="profile-info">
+        <h2 id="fullName">—</h2>
+        <dl>
+          <dt>کد زائر</dt><dd id="pCode">—</dd>
+          <dt>موبایل</dt><dd id="pMobile">—</dd>
+          <dt>تحصیلات</dt><dd id="pEducation">—</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="menu-grid">
+      <a class="menu-card" href="visa.html">
+        <span class="icon">🛂</span>
+        <span class="title">مشاهده ویزا</span>
+      </a>
+      <a class="menu-card" href="passport.html">
+        <span class="icon">📘</span>
+        <span class="title">مشاهده گذرنامه</span>
+      </a>
+      <a class="menu-card" href="room.html?city=madinah">
+        <span class="icon">🕌</span>
+        <span class="title">هتل مدینه</span>
+      </a>
+      <a class="menu-card" href="room.html?city=makkah">
+        <span class="icon">🕋</span>
+        <span class="title">هتل مکه</span>
+      </a>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    const session = requireSession();
+    redirectIfAdmin();
+
+    document.getElementById('fullName').textContent = `${session.firstName || ''} ${session.lastName || ''}`.trim() || 'زائر گرامی';
+    document.getElementById('pCode').textContent = session.code || '—';
+    document.getElementById('pMobile').textContent = session.mobile || '—';
+    document.getElementById('pEducation').textContent = session.education || '—';
+    document.getElementById('photo').src = fileUrl('photo', session.code);
+  </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مشاهده گذرنامه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <h1>مشاهده گذرنامه</h1>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost" onclick="history.back()">بازگشت</button>
+        <button class="btn btn-ghost" onclick="logout()">خروج</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="toolbar" id="adminToolbar" style="display:none;">
+        <div class="field">
+          <label for="codeInput">کد زائر</label>
+          <input class="input" id="codeInput" inputmode="numeric" placeholder="مثلاً 45">
+        </div>
+        <button class="btn btn-secondary" id="showBtn">نمایش</button>
+      </div>
+
+      <div id="viewerArea"></div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    const session = requireSession();
+    const viewerArea = document.getElementById('viewerArea');
+    const TYPE = 'passport';
+
+    function render(code) {
+      viewerArea.innerHTML = `
+        <iframe class="viewer-frame" src="${fileUrl(TYPE, code)}"></iframe>
+        <div class="actions-row">
+          <button class="btn btn-primary" id="dlBtn" style="width:auto;">دانلود فایل</button>
+        </div>`;
+      document.getElementById('dlBtn').onclick = () => downloadFile(fileUrl(TYPE, code), `passport-${code}.pdf`);
+    }
+
+    if (session.role === 'admin') {
+      document.getElementById('adminToolbar').style.display = 'flex';
+      document.getElementById('showBtn').onclick = () => {
+        const code = document.getElementById('codeInput').value.trim();
+        if (code) render(code);
+      };
+      viewerArea.innerHTML = '<div class="spinner-text">کد زائر مورد نظر را وارد و «نمایش» را بزنید</div>';
+    } else {
+      render(session.code);
+    }
+  </script>
+</body>
+</html>

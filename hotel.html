@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اطلاعات هتل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <h1>اطلاعات هتل</h1>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost" onclick="history.back()">بازگشت</button>
+        <button class="btn btn-ghost" onclick="logout()">خروج</button>
+      </div>
+    </div>
+
+    <div class="card" id="content">
+      <div class="spinner-text">در حال بارگذاری...</div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    requireSession();
+    const params = new URLSearchParams(location.search);
+    const city = params.get('city') === 'makkah' ? 'makkah' : 'madinah';
+
+    async function load() {
+      const data = await api('hotelInfo', { city });
+      const content = document.getElementById('content');
+      if (!data.ok) {
+        content.innerHTML = `<div class="muted">${data.message}</div>`;
+        return;
+      }
+      let gallery = '';
+      if (data.photoCount > 0) {
+        const imgs = Array.from({ length: data.photoCount }, (_, i) =>
+          `<img src="${hotelImageUrl(city, i)}" alt="عکس هتل" loading="lazy">`).join('');
+        gallery = `<div class="gallery">${imgs}</div>`;
+      } else {
+        gallery = '<div class="muted" style="margin-top:14px;">عکسی برای این هتل ثبت نشده است</div>';
+      }
+
+      content.innerHTML = `
+        <h2>${data.name}</h2>
+        <iframe class="map-frame" src="${data.mapEmbed}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        ${gallery}`;
+    }
+    load();
+  </script>
+</body>
+</html>

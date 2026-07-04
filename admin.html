@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل مدیریت</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <h1>پنل مدیریت</h1>
+      <button class="btn btn-ghost" onclick="logout()">خروج</button>
+    </div>
+
+    <div class="menu-grid">
+      <a class="menu-card" href="visa.html">
+        <span class="icon">🛂</span>
+        <span class="title">مشاهده ویزا</span>
+      </a>
+      <a class="menu-card" href="passport.html">
+        <span class="icon">📘</span>
+        <span class="title">مشاهده گذرنامه</span>
+      </a>
+      <a class="menu-card" href="room.html?city=madinah">
+        <span class="icon">🕌</span>
+        <span class="title">اتاق‌های مدینه</span>
+      </a>
+      <a class="menu-card" href="room.html?city=makkah">
+        <span class="icon">🕋</span>
+        <span class="title">اتاق‌های مکه</span>
+      </a>
+      <a class="menu-card" href="bus.html">
+        <span class="icon">🚌</span>
+        <span class="title">اتوبوس‌ها</span>
+      </a>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script> requireAdmin(); </script>
+</body>
+</html>

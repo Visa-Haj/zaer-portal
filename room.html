@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هم‌اتاقی‌ها</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <h1 id="pageTitle">هتل</h1>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost" onclick="history.back()">بازگشت</button>
+        <button class="btn btn-ghost" onclick="logout()">خروج</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="toolbar" id="adminToolbar" style="display:none;">
+        <div class="field">
+          <label for="roomSelect">شماره اتاق</label>
+          <select id="roomSelect" class="input"></select>
+        </div>
+      </div>
+
+      <div id="resultArea"><div class="spinner-text">در حال بارگذاری...</div></div>
+
+      <div class="actions-row">
+        <button class="btn btn-secondary" id="hotelInfoBtn" style="width:auto;">اطلاعات هتل</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    const session = requireSession();
+    const params = new URLSearchParams(location.search);
+    const city = params.get('city') === 'makkah' ? 'makkah' : 'madinah';
+    const cityLabel = city === 'madinah' ? 'مدینه' : 'مکه';
+    document.getElementById('pageTitle').textContent = `هتل ${cityLabel} - هم‌اتاقی‌ها`;
+    document.getElementById('hotelInfoBtn').onclick = () => location.href = `hotel.html?city=${city}`;
+
+    const resultArea = document.getElementById('resultArea');
+
+    function renderRoom(data) {
+      if (!data.ok) {
+        resultArea.innerHTML = `<div class="muted">${data.message}</div>`;
+        return;
+      }
+      const cards = data.people.map(personCardHtml).join('');
+      resultArea.innerHTML = `
+        <div class="badge">اتاق شماره ${data.room}</div>
+        <div class="people-grid">${cards || '<div class="muted">کسی در این اتاق ثبت نشده</div>'}</div>`;
+    }
+
+    async function loadOwnRoom() {
+      const data = await api('room', { city });
+      renderRoom(data);
+    }
+
+    async function loadAdminRoomList() {
+      document.getElementById('adminToolbar').style.display = 'flex';
+      const select = document.getElementById('roomSelect');
+      const data = await api('rooms', { city });
+      if (!data.ok || !data.rooms.length) {
+        resultArea.innerHTML = '<div class="muted">اتاقی ثبت نشده است</div>';
+        return;
+      }
+      select.innerHTML = data.rooms.map(r => `<option value="${r}">اتاق ${r}</option>`).join('');
+      select.onchange = async () => {
+        resultArea.innerHTML = '<div class="spinner-text">در حال بارگذاری...</div>';
+        const roomData = await api('room', { city, room: select.value });
+        renderRoom(roomData);
+      };
+      select.dispatchEvent(new Event('change'));
+    }
+
+    if (session.role === 'admin') {
+      loadAdminRoomList();
+    } else {
+      loadOwnRoom();
+    }
+  </script>
+</body>
+</html>

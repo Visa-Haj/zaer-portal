@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اتوبوس‌ها</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <h1>لیست سرنشینان اتوبوس</h1>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost" onclick="history.back()">بازگشت</button>
+        <button class="btn btn-ghost" onclick="logout()">خروج</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="toolbar">
+        <div class="field">
+          <label for="citySelect">مسیر</label>
+          <select id="citySelect" class="input">
+            <option value="makkah">مکه</option>
+            <option value="madinah">مدینه</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="busSelect">شماره اتوبوس</label>
+          <select id="busSelect" class="input"></select>
+        </div>
+      </div>
+      <div id="resultArea"><div class="spinner-text">در حال بارگذاری...</div></div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    requireAdmin();
+    const resultArea = document.getElementById('resultArea');
+    const citySelect = document.getElementById('citySelect');
+    const busSelect = document.getElementById('busSelect');
+
+    function renderBus(data) {
+      if (!data.ok) {
+        resultArea.innerHTML = `<div class="muted">${data.message}</div>`;
+        return;
+      }
+      if (!data.people.length) {
+        resultArea.innerHTML = '<div class="muted">کسی برای این اتوبوس ثبت نشده</div>';
+        return;
+      }
+      const rows = data.people.map(p => `
+        <tr>
+          <td>${p.firstName} ${p.lastName}</td>
+          <td>${p.room || '—'}</td>
+        </tr>`).join('');
+      resultArea.innerHTML = `
+        <table class="bus-table">
+          <thead><tr><th>نام و نام خانوادگی</th><th>شماره اتاق</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    }
+
+    async function loadBusesForCity() {
+      resultArea.innerHTML = '<div class="spinner-text">در حال بارگذاری...</div>';
+      const city = citySelect.value;
+      const data = await api('buses', { city });
+      if (!data.ok || !data.buses.length) {
+        busSelect.innerHTML = '';
+        resultArea.innerHTML = '<div class="muted">اتوبوسی برای این مسیر ثبت نشده است</div>';
+        return;
+      }
+      busSelect.innerHTML = data.buses.map(b => `<option value="${b}">اتوبوس ${b}</option>`).join('');
+      busSelect.dispatchEvent(new Event('change'));
+    }
+
+    citySelect.onchange = loadBusesForCity;
+    busSelect.onchange = async () => {
+      resultArea.innerHTML = '<div class="spinner-text">در حال بارگذاری...</div>';
+      renderBus(await api('bus', { city: citySelect.value, bus: busSelect.value }));
+    };
+
+    loadBusesForCity();
+  </script>
+</body>
+</html>
