@@ -44,36 +44,17 @@
     const session = requireSession();
     const viewerArea = document.getElementById('viewerArea');
     const TYPE = 'visa';
-    let currentBlob = null;
-    let currentCode = null;
+    const TYPE_LABEL = 'ویزا';
 
-    async function render(code) {
-      currentCode = code;
-      viewerArea.innerHTML = '<div class="spinner-text">در حال بارگذاری فایل...</div>';
-      try {
-        const res = await fetch(fileUrl(TYPE, code));
-        const blob = await res.blob();
-        if (blob.type.indexOf('text/plain') === 0) {
-          const msg = await blob.text();
-          viewerArea.innerHTML = `<div class="muted">${msg}</div>`;
-          return;
-        }
-        currentBlob = blob;
-        const objUrl = URL.createObjectURL(blob);
-        viewerArea.innerHTML = `
-          <iframe class="viewer-frame" src="${objUrl}"></iframe>
-          <div class="actions-row">
-            <button class="btn btn-primary" id="dlBtn" style="width:auto;">دانلود فایل</button>
-          </div>`;
-        document.getElementById('dlBtn').onclick = () => {
-          const a = document.createElement('a');
-          a.href = objUrl;
-          a.download = `visa-${code}${blob.type.indexOf('pdf') !== -1 ? '.pdf' : '.jpg'}`;
-          document.body.appendChild(a); a.click(); a.remove();
-        };
-      } catch (e) {
-        viewerArea.innerHTML = '<div class="muted">خطا در دریافت فایل. اتصال اینترنت یا آدرس سرور را بررسی کنید.</div>';
-      }
+    function render(code) {
+      const rawUrl = fileUrl(TYPE, code);
+      const viewerSrc = 'https://docs.google.com/viewer?embedded=true&url=' + encodeURIComponent(rawUrl);
+      viewerArea.innerHTML = `
+        <iframe class="viewer-frame" src="${viewerSrc}"></iframe>
+        <div class="actions-row">
+          <a class="btn btn-primary" style="width:auto; display:inline-flex;" href="${rawUrl}" target="_blank" rel="noopener">باز کردن / دانلود ${TYPE_LABEL}</a>
+        </div>
+        <p class="muted" style="margin-top:10px;">اگر پیش‌نمایش بالا خالی ماند، یعنی فایلی برای این کد پیدا نشد؛ با دکمه بالا هم می‌توانید مستقیم بررسی کنید.</p>`;
     }
 
     if (session.role === 'admin') {
