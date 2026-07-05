@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0e2323">
+<meta name="theme-color" content="#1f6b3f">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,28 +12,30 @@
 <title>ورود به کارتابل زائرین</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="center-page">
     <div class="card login-card">
-      <div class="eyebrow">کاروان زیارتی</div>
-      <h1>کارتابل زائرین</h1>
-      <div class="subtitle">برای ورود، کد زائر و کد ملی خود را وارد کنید</div>
+      <div class="logo-box" id="logoBox"><span>لوگوی کاروان</span></div>
+      <h1>کارتابل زائران</h1>
+      <div class="caravan-line" id="caravanTitle"></div>
+      <div class="manager-line" id="managerName"></div>
 
       <form id="loginForm">
         <div class="field">
-          <label for="code">کد زائر</label>
-          <input class="input" id="code" inputmode="numeric" autocomplete="off" required>
+          <label for="code">کد زائری</label>
+          <input class="input" id="code" placeholder="کد زائری" inputmode="numeric" autocomplete="off" required>
         </div>
         <div class="field">
           <label for="national">کد ملی</label>
-          <input class="input" id="national" inputmode="numeric" autocomplete="off" required>
+          <input class="input" id="national" placeholder="کد ملی ۱۰ رقمی" inputmode="numeric" autocomplete="off" required>
         </div>
-        <button class="btn btn-primary" type="submit" id="submitBtn">ورود</button>
+        <button class="btn btn-primary" type="submit" id="submitBtn">ورود به کارتابل</button>
       </form>
       <div class="error-box" id="errorBox"></div>
+      <div class="footer-note">🤲 التماس دعا</div>
     </div>
   </div>
 
@@ -41,6 +43,12 @@
   <script src="app.js"></script>
   <script>
     clearSession();
+    document.getElementById('caravanTitle').textContent = CONFIG.CARAVAN_TITLE || '';
+    document.getElementById('managerName').textContent = CONFIG.MANAGER_NAME || '';
+    if (CONFIG.LOGO_URL) {
+      document.getElementById('logoBox').innerHTML = `<img src="${CONFIG.LOGO_URL}" alt="لوگو">`;
+    }
+
     const form = document.getElementById('loginForm');
     const errorBox = document.getElementById('errorBox');
     const submitBtn = document.getElementById('submitBtn');
@@ -66,7 +74,7 @@
         showError(errorBox, 'خطا در ارتباط با سرور. آدرس SCRIPT_URL را در config.js بررسی کنید.');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'ورود';
+        submitBtn.textContent = 'ورود به کارتابل';
       }
     });
   </script>

@@ -73,7 +73,7 @@ function hideError(el) {
 function personCardHtml(p) {
   return `
     <div class="person-card">
-      <img class="avatar" src="${fileUrl('photo', p.code)}" onerror="this.style.visibility='hidden'" alt="عکس ${p.firstName}">
+      ${avatarOrFallbackHtml(p.code)}
       <div class="name">${p.firstName} ${p.lastName}</div>
       <div class="meta">
         کد زائر: ${p.code}<br>
@@ -81,4 +81,70 @@ function personCardHtml(p) {
         تحصیلات: ${p.education || '—'}
       </div>
     </div>`;
+}
+
+function avatarOrFallbackHtml(code) {
+  const id = 'ph_' + code + '_' + Math.random().toString(36).slice(2, 7);
+  return `<img class="avatar" id="${id}" src="${fileUrl('photo', code)}" alt="عکس زائر"
+    onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'avatar-fallback',innerHTML:'👤'}))">`;
+}
+
+/* ---------------- تاریخ شمسی و قمری ---------------- */
+function gregorianToJD(y, m, d) {
+  return Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4) +
+         Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
+         Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) +
+         d - 32075;
+}
+
+function toJalali(gy, gm, gd) {
+  const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+  const gy2 = (gm > 2) ? (gy + 1) : gy;
+  let days = 355666 + (365 * gy) + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) +
+             Math.floor((gy2 + 399) / 400) + gd + g_d_m[gm - 1];
+  let jy = -1595 + (33 * Math.floor(days / 12053));
+  days %= 12053;
+  jy += 4 * Math.floor(days / 1461);
+  days %= 1461;
+  if (days > 365) {
+    jy += Math.floor((days - 1) / 365);
+    days = (days - 1) % 365;
+  }
+  let jm, jd;
+  if (days < 186) {
+    jm = 1 + Math.floor(days / 31);
+    jd = 1 + (days % 31);
+  } else {
+    jm = 7 + Math.floor((days - 186) / 30);
+    jd = 1 + ((days - 186) % 30);
+  }
+  return { jy, jm, jd };
+}
+
+function toHijri(gy, gm, gd) {
+  let jd = gregorianToJD(gy, gm, gd);
+  jd = jd - 1948440 + 10632;
+  const n = Math.floor((jd - 1) / 10631);
+  jd = jd - 10631 * n + 354;
+  const j = Math.floor((10985 - jd) / 5316) * Math.floor((50 * jd) / 17719) +
+            Math.floor(jd / 5670) * Math.floor((43 * jd) / 15238);
+  jd = jd - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) -
+       Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+  const im = Math.floor((24 * jd) / 709);
+  const id = jd - Math.floor((709 * im) / 24);
+  const iy = 30 * n + j - 30;
+  return { hy: iy, hm: im, hd: id };
+}
+
+const JALALI_MONTHS = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
+const HIJRI_MONTHS = ['محرم', 'صفر', 'ربیع‌الاول', 'ربیع‌الثانی', 'جمادی‌الاول', 'جمادی‌الثانی', 'رجب', 'شعبان', 'رمضان', 'شوال', 'ذی‌القعده', 'ذی‌الحجه'];
+
+function todayDatesHtml() {
+  const now = new Date();
+  const gy = now.getFullYear(), gm = now.getMonth() + 1, gd = now.getDate();
+  const j = toJalali(gy, gm, gd);
+  const h = toHijri(gy, gm, gd);
+  const jalaliText = `${j.jd} ${JALALI_MONTHS[j.jm - 1]} ماه ${j.jy}`;
+  const hijriText = `${h.hd} ${HIJRI_MONTHS[h.hm - 1]} ${h.hy}`;
+  return `<span>📅 ${jalaliText}</span><span>🌙 ${hijriText} (قمری، تقریبی)</span>`;
 }

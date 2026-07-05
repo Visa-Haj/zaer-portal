@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0e2323">
+<meta name="theme-color" content="#1f6b3f">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,7 +12,7 @@
 <title>کارتابل زائر</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,15 +22,34 @@
       <button class="btn btn-ghost" onclick="logout()">خروج</button>
     </div>
 
-    <div class="card profile-card">
-      <img class="avatar" id="photo" src="" alt="عکس زائر" onerror="this.style.visibility='hidden'">
-      <div class="profile-info">
-        <h2 id="fullName">—</h2>
-        <dl>
-          <dt>کد زائر</dt><dd id="pCode">—</dd>
-          <dt>موبایل</dt><dd id="pMobile">—</dd>
-          <dt>تحصیلات</dt><dd id="pEducation">—</dd>
+    <div class="date-bar" id="dateBar"></div>
+
+    <div class="card">
+      <div class="profile-card">
+        <div id="photoBox"></div>
+        <div class="profile-info">
+          <h2 id="fullName">—</h2>
+          <dl>
+            <dt>کد زائر</dt><dd id="pCode">—</dd>
+            <dt>تاریخ تولد</dt><dd id="pBirth">—</dd>
+            <dt>موبایل</dt><dd id="pMobile">—</dd>
+            <dt>شماره گذرنامه</dt><dd id="pPassport">—</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="extra-details" id="extraDetails">
+        <dl class="profile-info" style="display:grid; grid-template-columns:auto auto; gap:5px 14px;">
+          <dt>تحصیلات</dt><dd id="eEducation">—</dd>
+          <dt>شهر محل تولد</dt><dd id="eBirthCity">—</dd>
+          <dt>شغل</dt><dd id="eJob">—</dd>
+          <dt>مرجع تقلید</dt><dd id="eMarja">—</dd>
+          <dt>ایثارگری</dt><dd id="eVeteran">—</dd>
         </dl>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn btn-secondary" id="toggleDetailsBtn" style="width:auto;">مشاهده کامل</button>
       </div>
     </div>
 
@@ -60,11 +79,28 @@
     const session = requireSession();
     redirectIfAdmin();
 
+    document.getElementById('dateBar').innerHTML = todayDatesHtml();
+
     document.getElementById('fullName').textContent = `${session.firstName || ''} ${session.lastName || ''}`.trim() || 'زائر گرامی';
     document.getElementById('pCode').textContent = session.code || '—';
+    document.getElementById('pBirth').textContent = session.birthDate || '—';
     document.getElementById('pMobile').textContent = session.mobile || '—';
-    document.getElementById('pEducation').textContent = session.education || '—';
-    document.getElementById('photo').src = fileUrl('photo', session.code);
+    document.getElementById('pPassport').textContent = session.passportNumber || '—';
+
+    document.getElementById('eEducation').textContent = session.education || '—';
+    document.getElementById('eBirthCity').textContent = session.birthCity || '—';
+    document.getElementById('eJob').textContent = session.job || '—';
+    document.getElementById('eMarja').textContent = session.marja || '—';
+    document.getElementById('eVeteran').textContent = session.veteran || '—';
+
+    document.getElementById('photoBox').innerHTML = avatarOrFallbackHtml(session.code);
+
+    const extra = document.getElementById('extraDetails');
+    const toggleBtn = document.getElementById('toggleDetailsBtn');
+    toggleBtn.onclick = () => {
+      extra.classList.toggle('show');
+      toggleBtn.textContent = extra.classList.contains('show') ? 'بستن' : 'مشاهده کامل';
+    };
   </script>
 </body>
 </html>
