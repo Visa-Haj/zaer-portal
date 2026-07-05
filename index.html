@@ -18,7 +18,6 @@
 <body>
   <div class="center-page">
     <div class="card login-card">
-      <div class="logo-box" id="logoBox"><span>لوگوی کاروان</span></div>
       <h1>کارتابل زائران</h1>
       <div class="caravan-line" id="caravanTitle"></div>
       <div class="manager-line" id="managerName"></div>
@@ -46,7 +45,7 @@
     document.getElementById('caravanTitle').textContent = CONFIG.CARAVAN_TITLE || '';
     document.getElementById('managerName').textContent = CONFIG.MANAGER_NAME || '';
     if (CONFIG.LOGO_URL) {
-      document.getElementById('logoBox').innerHTML = `<img src="${CONFIG.LOGO_URL}" alt="لوگو">`;
+      document.querySelector('.center-page').style.backgroundImage = `url('${CONFIG.LOGO_URL}')`;
     }
 
     const form = document.getElementById('loginForm');

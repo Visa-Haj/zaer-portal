@@ -60,7 +60,19 @@ a { color: var(--primary); }
   align-items: center;
   justify-content: center;
   padding: 20px;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
+.center-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10,40,22,.35) 0%, rgba(10,40,22,.55) 100%);
+  z-index: 0;
+}
+.center-page > * { position: relative; z-index: 1; }
 
 .card {
   background: var(--surface);
