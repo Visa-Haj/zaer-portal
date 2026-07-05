@@ -1,0 +1,11 @@
+{
+  "name": "کارتابل زائرین",
+  "short_name": "کارتابل زائرین",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b2323",
+  "theme_color": "#0e2323",
+  "lang": "fa",
+  "dir": "rtl"
+}
