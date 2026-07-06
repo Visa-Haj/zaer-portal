@@ -55,13 +55,18 @@
       }
       const dataUrl = base64ToBlobUrl(result.base64, result.mimeType);
       const isPdf = (result.mimeType || '').indexOf('pdf') !== -1;
+      const fileName = `${TYPE}-${code}.${isPdf ? 'pdf' : 'jpg'}`;
       const previewHtml = isPdf
-        ? `<iframe class="viewer-frame" src="${dataUrl}"></iframe>`
+        ? `<div style="text-align:center; padding:40px 10px; background:var(--input-bg); border-radius:12px;">
+             <div style="font-size:48px; margin-bottom:12px;">📄</div>
+             <p class="muted">فایل ${TYPE_LABEL} آماده است</p>
+             <button class="btn btn-primary" style="width:auto; display:inline-flex; margin-top:8px;" onclick="window.open('${dataUrl}', '_blank')">باز کردن ${TYPE_LABEL}</button>
+           </div>`
         : `<img src="${dataUrl}" alt="${TYPE_LABEL}" style="width:100%; border-radius:12px; border:1px solid var(--border);">`;
       viewerArea.innerHTML = `
         ${previewHtml}
         <div class="actions-row">
-          <a class="btn btn-primary" style="width:auto; display:inline-flex;" href="${dataUrl}" download="${TYPE}-${code}.${isPdf ? 'pdf' : 'jpg'}">دانلود ${TYPE_LABEL}</a>
+          <a class="btn btn-primary" style="width:auto; display:inline-flex;" href="${dataUrl}" download="${fileName}">دانلود ${TYPE_LABEL}</a>
         </div>`;
     }
 

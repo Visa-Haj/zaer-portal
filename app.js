@@ -63,10 +63,17 @@ function personCardHtml(p) {
       <div class="name">${p.firstName} ${p.lastName}</div>
       <div class="meta">
         کد زائر: ${p.code}<br>
-        موبایل: ${p.mobile || '—'}<br>
+        شماره موبایل: ${formatMobile(p.mobile)}<br>
         تحصیلات: ${p.education || '—'}
       </div>
     </div>`;
+}
+
+function formatMobile(m) {
+  if (!m) return '—';
+  let s = String(m).trim();
+  if (s && !s.startsWith('0')) s = '0' + s;
+  return s;
 }
 
 function avatarOrFallbackHtml(code) {
@@ -124,7 +131,9 @@ function toJalali(gy, gm, gd) {
 }
 
 function toHijri(gy, gm, gd) {
-  let jd = gregorianToJD(gy, gm, gd);
+  // این عدد رو اگه تاریخ قمری هنوز جلو/عقبه، تغییر بده (هر واحد = ۱ روز)
+  const HIJRI_ADJUSTMENT_DAYS = -2;
+  let jd = gregorianToJD(gy, gm, gd) + HIJRI_ADJUSTMENT_DAYS;
   jd = jd - 1948440 + 10632;
   const n = Math.floor((jd - 1) / 10631);
   jd = jd - 10631 * n + 354;

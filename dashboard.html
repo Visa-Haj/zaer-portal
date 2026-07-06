@@ -32,7 +32,7 @@
           <dl>
             <dt>کد زائر</dt><dd id="pCode">—</dd>
             <dt>تاریخ تولد</dt><dd id="pBirth">—</dd>
-            <dt>موبایل</dt><dd id="pMobile">—</dd>
+            <dt>شماره موبایل</dt><dd id="pMobile">—</dd>
             <dt>شماره گذرنامه</dt><dd id="pPassport">—</dd>
           </dl>
         </div>
@@ -84,7 +84,7 @@
     document.getElementById('fullName').textContent = `${session.firstName || ''} ${session.lastName || ''}`.trim() || 'زائر گرامی';
     document.getElementById('pCode').textContent = session.code || '—';
     document.getElementById('pBirth').textContent = session.birthDate || '—';
-    document.getElementById('pMobile').textContent = session.mobile || '—';
+    document.getElementById('pMobile').textContent = formatMobile(session.mobile);
     document.getElementById('pPassport').textContent = session.passportNumber || '—';
 
     document.getElementById('eEducation').textContent = session.education || '—';
