@@ -19,9 +19,11 @@ const CONFIG = {
   PASSPORT_FOLDER_ID: '16IBy7R42f2GqcKHXbi0TL0lGIQ8lws3B',
   PHOTO_FOLDER_ID: '11uLnnxB1_rrG3xzKo-Fesw9ZJQHjh9Z-',
 
-  // یوزر مدیر
-  ADMIN_CODE: '26035',
-  ADMIN_PASS: '26035',
+  // یوزرهای مدیر (می‌تونید چند حساب مدیر اضافه کنید)
+  ADMIN_ACCOUNTS: [
+    { code: '26035', pass: '26035' },
+    { code: '26062', pass: '26062' }
+  ],
 
   // مدت اعتبار نشست ورود (ساعت)
   SESSION_HOURS: 6,
@@ -60,6 +62,7 @@ function routeJson(e) {
     case 'file': return handleFileRequest(e);
     case 'hotelImage': return handleHotelImage(e);
     case 'room': return handleRoom(e);
+    case 'person': return handlePerson(e);
     case 'rooms': return handleRoomsList(e);
     case 'buses': return handleBusesList(e);
     case 'bus': return handleBus(e);
@@ -146,7 +149,8 @@ function handleLogin(e) {
   const national = (e.parameter.national || '').trim();
   if (!code || !national) return { ok: false, message: 'کد زائر و کد ملی را وارد کنید' };
 
-  if (code === CONFIG.ADMIN_CODE && national === CONFIG.ADMIN_PASS) {
+  const isAdmin = CONFIG.ADMIN_ACCOUNTS.some(acc => acc.code === code && acc.pass === national);
+  if (isAdmin) {
     const token = makeToken({ role: 'admin', code: code });
     return { ok: true, role: 'admin', token: token };
   }
@@ -225,6 +229,17 @@ function handleRoom(e) {
     .map(p => ({ code: p.code, firstName: p.firstName, lastName: p.lastName, mobile: p.mobile, education: p.education }));
 
   return { ok: true, room: room, people: mates };
+}
+
+function handlePerson(e) {
+  const session = requireSession(e);
+  if (session.role !== 'admin') return { ok: false, message: 'این بخش فقط برای مدیر است' };
+  const code = (e.parameter.code || '').trim();
+  if (!code) return { ok: false, message: 'کد زائر مشخص نشده است' };
+  const rows = getSheetRows();
+  const person = rows.find(p => p.code === code);
+  if (!person) return { ok: false, message: 'زائری با این کد پیدا نشد' };
+  return { ok: true, data: person };
 }
 
 function handleRoomsList(e) {

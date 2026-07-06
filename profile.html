@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1f6b3f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="کارتابل زائرین">
+<link rel="manifest" href="manifest.json">
+<title>پرونده زائر</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <h1>پرونده زائر</h1>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost" onclick="history.back()">بازگشت</button>
+        <button class="btn btn-ghost" onclick="logout()">خروج</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="toolbar">
+        <div class="field">
+          <label for="codeInput">کد زائر</label>
+          <input class="input" id="codeInput" inputmode="numeric" placeholder="مثلاً 45">
+        </div>
+        <button class="btn btn-secondary" id="showBtn">نمایش</button>
+      </div>
+      <div id="resultArea"><div class="spinner-text">کد زائر را وارد و «نمایش» را بزنید</div></div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    requireAdmin();
+    const resultArea = document.getElementById('resultArea');
+
+    async function loadPerson(code) {
+      resultArea.innerHTML = '<div class="spinner-text">در حال جست‌وجو...</div>';
+      const result = await api('person', { code });
+      if (!result.ok) {
+        resultArea.innerHTML = `<div class="muted">${result.message}</div>`;
+        return;
+      }
+      const p = result.data;
+      resultArea.innerHTML = `
+        <div class="profile-card">
+          ${avatarOrFallbackHtml(p.code)}
+          <div class="profile-info">
+            <h2>${p.firstName} ${p.lastName}</h2>
+            <dl>
+              <dt>کد زائر</dt><dd>${p.code}</dd>
+              <dt>کد ملی</dt><dd>${p.nationalCode || '—'}</dd>
+              <dt>تاریخ تولد</dt><dd>${p.birthDate || '—'}</dd>
+              <dt>شماره موبایل</dt><dd>${formatMobile(p.mobile)}</dd>
+              <dt>شماره گذرنامه</dt><dd>${p.passportNumber || '—'}</dd>
+              <dt>تحصیلات</dt><dd>${p.education || '—'}</dd>
+              <dt>شهر محل تولد</dt><dd>${p.birthCity || '—'}</dd>
+              <dt>شغل</dt><dd>${p.job || '—'}</dd>
+              <dt>مرجع تقلید</dt><dd>${p.marja || '—'}</dd>
+              <dt>ایثارگری</dt><dd>${p.veteran || '—'}</dd>
+              <dt>اتوبوس مکه</dt><dd>${p.busMakkah || '—'}</dd>
+              <dt>اتاق مکه</dt><dd>${p.makkahRoom || '—'}</dd>
+              <dt>اتوبوس مدینه</dt><dd>${p.busMadinah || '—'}</dd>
+              <dt>اتاق مدینه</dt><dd>${p.madinahRoom || '—'}</dd>
+            </dl>
+          </div>
+        </div>
+        <div class="actions-row">
+          <a class="btn btn-secondary" style="width:auto;" href="visa.html?code=${p.code}">مشاهده ویزا</a>
+          <a class="btn btn-secondary" style="width:auto;" href="passport.html?code=${p.code}">مشاهده گذرنامه</a>
+        </div>`;
+    }
+
+    document.getElementById('showBtn').onclick = () => {
+      const code = document.getElementById('codeInput').value.trim();
+      if (code) loadPerson(code);
+    };
+  </script>
+</body>
+</html>

@@ -76,7 +76,13 @@
         const code = document.getElementById('codeInput').value.trim();
         if (code) render(code);
       };
-      viewerArea.innerHTML = '<div class="spinner-text">کد زائر مورد نظر را وارد و «نمایش» را بزنید</div>';
+      const urlCode = new URLSearchParams(location.search).get('code');
+      if (urlCode) {
+        document.getElementById('codeInput').value = urlCode;
+        render(urlCode);
+      } else {
+        viewerArea.innerHTML = '<div class="spinner-text">کد زائر مورد نظر را وارد و «نمایش» را بزنید</div>';
+      }
     } else {
       render(session.code);
     }
