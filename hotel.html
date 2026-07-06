@@ -37,6 +37,27 @@
     const params = new URLSearchParams(location.search);
     const city = params.get('city') === 'makkah' ? 'makkah' : 'madinah';
 
+    function galleryImagePlaceholder(city, index) {
+      const id = 'gp_' + city + '_' + index;
+      loadGalleryImageAsync(id, city, index);
+      return `<div class="muted" id="${id}" style="background:var(--input-bg); border-radius:12px; height:140px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border);">در حال بارگذاری...</div>`;
+    }
+
+    async function loadGalleryImageAsync(id, city, index) {
+      try {
+        const result = await fetchHotelImageData(city, index);
+        const el = document.getElementById(id);
+        if (result.ok && el) {
+          const img = document.createElement('img');
+          img.src = base64ToBlobUrl(result.base64, result.mimeType);
+          img.alt = 'عکس هتل';
+          el.replaceWith(img);
+        } else if (el) {
+          el.textContent = 'خطا در بارگذاری تصویر';
+        }
+      } catch (e) {}
+    }
+
     async function load() {
       const data = await api('hotelInfo', { city });
       const content = document.getElementById('content');
@@ -46,8 +67,7 @@
       }
       let gallery = '';
       if (data.photoCount > 0) {
-        const imgs = Array.from({ length: data.photoCount }, (_, i) =>
-          `<img src="${hotelImageUrl(city, i)}" alt="عکس هتل" loading="lazy">`).join('');
+        const imgs = Array.from({ length: data.photoCount }, (_, i) => galleryImagePlaceholder(city, i)).join('');
         gallery = `<div class="gallery">${imgs}</div>`;
       } else {
         gallery = '<div class="muted" style="margin-top:14px;">عکسی برای این هتل ثبت نشده است</div>';

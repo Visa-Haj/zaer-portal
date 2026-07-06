@@ -28,37 +28,23 @@ async function api(action, params) {
   return res.json();
 }
 
-function fileUrl(type, code) {
-  const s = getSession();
-  const usp = new URLSearchParams({ action: 'file', type, code, token: (s && s.token) || '' });
-  return `${CONFIG.SCRIPT_URL}?${usp.toString()}`;
+async function fetchFileData(params) {
+  return api('file', params);
+}
+async function fetchHotelImageData(city, index) {
+  return api('hotelImage', { city, index });
+}
+function toDataUrl(result) {
+  return `data:${result.mimeType};base64,${result.base64}`;
 }
 
-function hotelImageUrl(city, index) {
-  const s = getSession();
-  const usp = new URLSearchParams({ action: 'hotelImage', city, index: String(index), token: (s && s.token) || '' });
-  return `${CONFIG.SCRIPT_URL}?${usp.toString()}`;
-}
-
-async function downloadFile(url, filename) {
-  try {
-    const res = await fetch(url);
-    const blob = await res.blob();
-    if (blob.type.indexOf('text/plain') === 0) {
-      alert(await blob.text());
-      return;
-    }
-    const objUrl = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = objUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(objUrl);
-  } catch (e) {
-    alert('دانلود فایل با خطا مواجه شد');
-  }
+function base64ToBlobUrl(base64, mimeType) {
+  const byteChars = atob(base64);
+  const byteNumbers = new Array(byteChars.length);
+  for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: mimeType });
+  return URL.createObjectURL(blob);
 }
 
 function showError(el, msg) {
@@ -85,8 +71,24 @@ function personCardHtml(p) {
 
 function avatarOrFallbackHtml(code) {
   const id = 'ph_' + code + '_' + Math.random().toString(36).slice(2, 7);
-  return `<img class="avatar" id="${id}" src="${fileUrl('photo', code)}" alt="عکس زائر"
-    onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'avatar-fallback',innerHTML:'👤'}))">`;
+  loadAvatarAsync(id, code);
+  return `<div class="avatar-fallback" id="${id}">👤</div>`;
+}
+
+async function loadAvatarAsync(id, code) {
+  try {
+    const result = await fetchFileData({ type: 'photo', code });
+    const el = document.getElementById(id);
+    if (result && result.ok && el) {
+      const img = document.createElement('img');
+      img.className = 'avatar';
+      img.alt = 'عکس زائر';
+      img.src = base64ToBlobUrl(result.base64, result.mimeType);
+      el.replaceWith(img);
+    }
+  } catch (e) {
+    // در صورت خطا، همان آیکون جایگزین باقی می‌ماند
+  }
 }
 
 /* ---------------- تاریخ شمسی و قمری ---------------- */

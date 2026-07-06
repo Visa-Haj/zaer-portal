@@ -47,10 +47,6 @@ const CONFIG = {
    ========================================================= */
 function doGet(e) {
   try {
-    const action = e.parameter.action;
-    if (action === 'file' || action === 'hotelImage') {
-      return handleFileRequest(e);
-    }
     return jsonOut(routeJson(e));
   } catch (err) {
     return jsonOut({ ok: false, message: 'خطا: ' + err.message });
@@ -61,6 +57,8 @@ function routeJson(e) {
   const action = e.parameter.action;
   switch (action) {
     case 'login': return handleLogin(e);
+    case 'file': return handleFileRequest(e);
+    case 'hotelImage': return handleHotelImage(e);
     case 'room': return handleRoom(e);
     case 'rooms': return handleRoomsList(e);
     case 'buses': return handleBusesList(e);
@@ -165,11 +163,8 @@ function handleLogin(e) {
    فایل‌ها (ویزا / گذرنامه / عکس) - از گوگل‌درایو خصوصی سرو می‌شود
    ========================================================= */
 function handleFileRequest(e) {
-  const action = e.parameter.action;
   const session = getSession(e.parameter.token);
-  if (!session) return textErrorBlob('نشست شما منقضی شده. دوباره وارد شوید.');
-
-  if (action === 'hotelImage') return handleHotelImage(e);
+  if (!session) return { ok: false, message: 'نشست شما منقضی شده. دوباره وارد شوید.' };
 
   const type = e.parameter.type; // visa | passport | photo
   let code = (e.parameter.code || '').trim();
@@ -183,11 +178,18 @@ function handleFileRequest(e) {
   if (type === 'visa') folderId = CONFIG.VISA_FOLDER_ID;
   else if (type === 'passport') folderId = CONFIG.PASSPORT_FOLDER_ID;
   else if (type === 'photo') folderId = CONFIG.PHOTO_FOLDER_ID;
-  else return textErrorBlob('نوع فایل نامعتبر است');
+  else return { ok: false, message: 'نوع فایل نامعتبر است' };
 
   const file = findFileByCode(folderId, code);
-  if (!file) return textErrorBlob('فایلی برای این کد زائر یافت نشد');
-  return file.getBlob();
+  if (!file) return { ok: false, message: 'فایلی برای این کد زائر یافت نشد' };
+
+  const blob = file.getBlob();
+  return {
+    ok: true,
+    mimeType: blob.getContentType(),
+    fileName: file.getName(),
+    base64: Utilities.base64Encode(blob.getBytes())
+  };
 }
 
 function findFileByCode(folderId, code) {
@@ -281,17 +283,24 @@ function handleHotelInfo(e) {
 }
 
 function handleHotelImage(e) {
+  const session = getSession(e.parameter.token);
+  if (!session) return { ok: false, message: 'نشست شما منقضی شده. دوباره وارد شوید.' };
+
   const city = e.parameter.city;
   const index = parseInt(e.parameter.index || '0', 10);
   const hotel = CONFIG.HOTELS[city];
-  if (!hotel) return textErrorBlob('شهر نامعتبر است');
+  if (!hotel) return { ok: false, message: 'شهر نامعتبر است' };
+
   const folder = DriveApp.getFolderById(hotel.photosFolderId);
   const files = folder.getFiles();
   let i = 0;
   while (files.hasNext()) {
     const f = files.next();
-    if (i === index) return f.getBlob();
+    if (i === index) {
+      const blob = f.getBlob();
+      return { ok: true, mimeType: blob.getContentType(), base64: Utilities.base64Encode(blob.getBytes()) };
+    }
     i++;
   }
-  return textErrorBlob('تصویر یافت نشد');
+  return { ok: false, message: 'تصویر یافت نشد' };
 }

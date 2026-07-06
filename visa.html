@@ -46,15 +46,23 @@
     const TYPE = 'visa';
     const TYPE_LABEL = 'ویزا';
 
-    function render(code) {
-      const rawUrl = fileUrl(TYPE, code);
-      const viewerSrc = 'https://docs.google.com/viewer?embedded=true&url=' + encodeURIComponent(rawUrl);
+    async function render(code) {
+      viewerArea.innerHTML = '<div class="spinner-text">در حال بارگذاری فایل...</div>';
+      const result = await fetchFileData({ type: TYPE, code });
+      if (!result.ok) {
+        viewerArea.innerHTML = `<div class="muted">${result.message}</div>`;
+        return;
+      }
+      const dataUrl = base64ToBlobUrl(result.base64, result.mimeType);
+      const isPdf = (result.mimeType || '').indexOf('pdf') !== -1;
+      const previewHtml = isPdf
+        ? `<iframe class="viewer-frame" src="${dataUrl}"></iframe>`
+        : `<img src="${dataUrl}" alt="${TYPE_LABEL}" style="width:100%; border-radius:12px; border:1px solid var(--border);">`;
       viewerArea.innerHTML = `
-        <iframe class="viewer-frame" src="${viewerSrc}"></iframe>
+        ${previewHtml}
         <div class="actions-row">
-          <a class="btn btn-primary" style="width:auto; display:inline-flex;" href="${rawUrl}" target="_blank" rel="noopener">باز کردن / دانلود ${TYPE_LABEL}</a>
-        </div>
-        <p class="muted" style="margin-top:10px;">اگر پیش‌نمایش بالا خالی ماند، یعنی فایلی برای این کد پیدا نشد؛ با دکمه بالا هم می‌توانید مستقیم بررسی کنید.</p>`;
+          <a class="btn btn-primary" style="width:auto; display:inline-flex;" href="${dataUrl}" download="${TYPE}-${code}.${isPdf ? 'pdf' : 'jpg'}">دانلود ${TYPE_LABEL}</a>
+        </div>`;
     }
 
     if (session.role === 'admin') {
