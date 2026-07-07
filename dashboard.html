@@ -42,6 +42,7 @@
         <dl class="profile-info" style="display:grid; grid-template-columns:auto auto; gap:5px 14px;">
           <dt>تحصیلات</dt><dd id="eEducation">—</dd>
           <dt>شهر محل تولد</dt><dd id="eBirthCity">—</dd>
+          <dt>گروه خونی</dt><dd id="eBloodType">—</dd>
           <dt>شغل</dt><dd id="eJob">—</dd>
           <dt>مرجع تقلید</dt><dd id="eMarja">—</dd>
           <dt>ایثارگری</dt><dd id="eVeteran">—</dd>
@@ -51,6 +52,11 @@
       <div class="actions-row">
         <button class="btn btn-secondary" id="toggleDetailsBtn" style="width:auto;">مشاهده کامل</button>
       </div>
+    </div>
+
+    <div class="date-bar">
+      <span>🚌 اتوبوس مکه: <span id="busMakkah">—</span></span>
+      <span>🚌 اتوبوس مدینه: <span id="busMadinah">—</span></span>
     </div>
 
     <div class="menu-grid">
@@ -89,11 +95,14 @@
 
     document.getElementById('eEducation').textContent = session.education || '—';
     document.getElementById('eBirthCity').textContent = session.birthCity || '—';
+    document.getElementById('eBloodType').textContent = session.bloodType || '—';
+    document.getElementById('busMakkah').textContent = session.busMakkah || '—';
+    document.getElementById('busMadinah').textContent = session.busMadinah || '—';
     document.getElementById('eJob').textContent = session.job || '—';
     document.getElementById('eMarja').textContent = session.marja || '—';
     document.getElementById('eVeteran').textContent = session.veteran || '—';
 
-    document.getElementById('photoBox').innerHTML = avatarOrFallbackHtml(session.code);
+    document.getElementById('photoBox').innerHTML = avatarOrFallbackHtml(session.code, 'lg');
 
     const extra = document.getElementById('extraDetails');
     const toggleBtn = document.getElementById('toggleDetailsBtn');

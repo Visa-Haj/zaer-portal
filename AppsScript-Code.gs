@@ -109,10 +109,11 @@ function getSheetRows() {
       busMadinah: String(r[10] || '').trim(),
       madinahRoom: String(r[11] || '').trim(),
       passportNumber: r[12] || '',
-      marja: r[13] || '',
-      job: r[14] || '',
-      veteran: r[15] || '',
-      notes: r[16] || ''
+      bloodType: r[13] || '',
+      marja: r[14] || '',
+      job: r[15] || '',
+      veteran: r[16] || '',
+      notes: r[17] || ''
     }));
 
   try {
@@ -226,7 +227,7 @@ function handleRoom(e) {
 
   const mates = rows
     .filter(p => p[roomField] === String(room))
-    .map(p => ({ code: p.code, firstName: p.firstName, lastName: p.lastName, mobile: p.mobile, education: p.education }));
+    .map(p => ({ code: p.code, firstName: p.firstName, lastName: p.lastName, mobile: p.mobile, education: p.education, birthDate: p.birthDate, birthCity: p.birthCity }));
 
   return { ok: true, room: room, people: mates };
 }

@@ -53,7 +53,7 @@
       const p = result.data;
       resultArea.innerHTML = `
         <div class="profile-card">
-          ${avatarOrFallbackHtml(p.code)}
+          ${avatarOrFallbackHtml(p.code, 'lg')}
           <div class="profile-info">
             <h2>${p.firstName} ${p.lastName}</h2>
             <dl>
@@ -62,6 +62,7 @@
               <dt>تاریخ تولد</dt><dd>${p.birthDate || '—'}</dd>
               <dt>شماره موبایل</dt><dd>${formatMobile(p.mobile)}</dd>
               <dt>شماره گذرنامه</dt><dd>${p.passportNumber || '—'}</dd>
+              <dt>گروه خونی</dt><dd>${p.bloodType || '—'}</dd>
               <dt>تحصیلات</dt><dd>${p.education || '—'}</dd>
               <dt>شهر محل تولد</dt><dd>${p.birthCity || '—'}</dd>
               <dt>شغل</dt><dd>${p.job || '—'}</dd>

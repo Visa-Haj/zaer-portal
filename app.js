@@ -59,12 +59,18 @@ function hideError(el) {
 function personCardHtml(p) {
   return `
     <div class="person-card">
-      ${avatarOrFallbackHtml(p.code)}
-      <div class="name">${p.firstName} ${p.lastName}</div>
-      <div class="meta">
-        کد زائر: ${p.code}<br>
-        شماره موبایل: ${formatMobile(p.mobile)}<br>
-        تحصیلات: ${p.education || '—'}
+      <div class="person-card-row">
+        ${avatarOrFallbackHtml(p.code, 'md')}
+        <div class="person-card-info">
+          <div class="name">${p.firstName} ${p.lastName}</div>
+          <div class="meta">
+            کد زائر: ${p.code}<br>
+            شماره موبایل: ${formatMobile(p.mobile)}<br>
+            محل تولد: ${p.birthCity || '—'}<br>
+            تاریخ تولد: ${p.birthDate || '—'}<br>
+            تحصیلات: ${p.education || '—'}
+          </div>
+        </div>
       </div>
     </div>`;
 }
@@ -76,26 +82,38 @@ function formatMobile(m) {
   return s;
 }
 
-function avatarOrFallbackHtml(code) {
+function avatarOrFallbackHtml(code, size) {
   const id = 'ph_' + code + '_' + Math.random().toString(36).slice(2, 7);
-  loadAvatarAsync(id, code);
-  return `<div class="avatar-fallback" id="${id}">👤</div>`;
+  loadAvatarAsync(id, code, size);
+  const sizeClass = size === 'lg' ? 'avatar-fallback avatar-lg' : (size === 'md' ? 'avatar-fallback avatar-md' : 'avatar-fallback');
+  return `<div class="${sizeClass}" id="${id}">👤</div>`;
 }
 
-async function loadAvatarAsync(id, code) {
+async function loadAvatarAsync(id, code, size) {
   try {
     const result = await fetchFileData({ type: 'photo', code });
     const el = document.getElementById(id);
     if (result && result.ok && el) {
+      const url = base64ToBlobUrl(result.base64, result.mimeType);
       const img = document.createElement('img');
-      img.className = 'avatar';
+      img.className = size === 'lg' ? 'avatar avatar-lg' : (size === 'md' ? 'avatar avatar-md' : 'avatar');
       img.alt = 'عکس زائر';
-      img.src = base64ToBlobUrl(result.base64, result.mimeType);
+      img.src = url;
+      img.style.cursor = 'zoom-in';
+      img.onclick = () => openImageFullscreen(url);
       el.replaceWith(img);
     }
   } catch (e) {
     // در صورت خطا، همان آیکون جایگزین باقی می‌ماند
   }
+}
+
+function openImageFullscreen(src) {
+  const overlay = document.createElement('div');
+  overlay.className = 'fullscreen-overlay';
+  overlay.innerHTML = `<img src="${src}" alt="نمایش کامل عکس">`;
+  overlay.onclick = () => overlay.remove();
+  document.body.appendChild(overlay);
 }
 
 /* ---------------- تاریخ شمسی و قمری ---------------- */
