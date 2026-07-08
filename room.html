@@ -45,6 +45,7 @@
 
   <script src="config.js"></script>
   <script src="app.js"></script>
+  <script>applyPortalBackground();</script>
   <script>
     const session = requireSession();
     const params = new URLSearchParams(location.search);
@@ -70,7 +71,7 @@
           <span>شماره اتاق</span>
           <span class="value">${data.room}</span>
         </div>
-        <div class="badge" style="display:block; text-align:center; margin-bottom:12px;">تعداد افراد اتاق (${data.people.length})</div>
+        <div class="badge" style="display:block; text-align:center; margin-bottom:12px;">تعداد افراد اتاق (${data.people.length} نفر)</div>
         <div class="people-grid">${cards || '<div class="muted">کسی در این اتاق ثبت نشده</div>'}</div>`;
     }
 

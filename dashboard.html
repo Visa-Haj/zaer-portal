@@ -30,33 +30,30 @@
         <div class="profile-info">
           <h2 id="fullName">—</h2>
           <dl>
-            <dt>کد زائر</dt><dd id="pCode">—</dd>
-            <dt>تاریخ تولد</dt><dd id="pBirth">—</dd>
-            <dt>شماره موبایل</dt><dd id="pMobile">—</dd>
-            <dt>شماره گذرنامه</dt><dd id="pPassport">—</dd>
+            <dt>🆔 کد زائر</dt><dd id="pCode">—</dd>
+            <dt>📅 تاریخ تولد</dt><dd id="pBirth">—</dd>
+            <dt>📱 شماره موبایل</dt><dd id="pMobile">—</dd>
+            <dt>📘 شماره گذرنامه</dt><dd id="pPassport">—</dd>
+            <dt>🚌 اتوبوس مکه</dt><dd id="busMakkah">—</dd>
+            <dt>🚌 اتوبوس مدینه</dt><dd id="busMadinah">—</dd>
           </dl>
         </div>
       </div>
 
       <div class="extra-details" id="extraDetails">
         <dl class="profile-info" style="display:grid; grid-template-columns:auto auto; gap:5px 14px;">
-          <dt>تحصیلات</dt><dd id="eEducation">—</dd>
-          <dt>شهر محل تولد</dt><dd id="eBirthCity">—</dd>
-          <dt>گروه خونی</dt><dd id="eBloodType">—</dd>
-          <dt>شغل</dt><dd id="eJob">—</dd>
-          <dt>مرجع تقلید</dt><dd id="eMarja">—</dd>
-          <dt>ایثارگری</dt><dd id="eVeteran">—</dd>
+          <dt>🎓 تحصیلات</dt><dd id="eEducation">—</dd>
+          <dt>🏙️ شهر محل تولد</dt><dd id="eBirthCity">—</dd>
+          <dt>🩸 گروه خونی</dt><dd id="eBloodType">—</dd>
+          <dt>💼 شغل</dt><dd id="eJob">—</dd>
+          <dt>🕌 مرجع تقلید</dt><dd id="eMarja">—</dd>
+          <dt>🎖️ ایثارگری</dt><dd id="eVeteran">—</dd>
         </dl>
       </div>
 
       <div class="actions-row">
-        <button class="btn btn-secondary" id="toggleDetailsBtn" style="width:auto;">مشاهده کامل</button>
+        <button class="btn btn-secondary" id="toggleDetailsBtn" style="width:auto;">مشاهده جزئیات</button>
       </div>
-    </div>
-
-    <div class="date-bar">
-      <span>🚌 اتوبوس مکه: <span id="busMakkah">—</span></span>
-      <span>🚌 اتوبوس مدینه: <span id="busMadinah">—</span></span>
     </div>
 
     <div class="menu-grid">
@@ -81,6 +78,7 @@
 
   <script src="config.js"></script>
   <script src="app.js"></script>
+  <script>applyPortalBackground();</script>
   <script>
     const session = requireSession();
     redirectIfAdmin();
@@ -92,12 +90,12 @@
     document.getElementById('pBirth').textContent = session.birthDate || '—';
     document.getElementById('pMobile').textContent = formatMobile(session.mobile);
     document.getElementById('pPassport').textContent = session.passportNumber || '—';
+    document.getElementById('busMakkah').textContent = session.busMakkah || '—';
+    document.getElementById('busMadinah').textContent = session.busMadinah || '—';
 
     document.getElementById('eEducation').textContent = session.education || '—';
     document.getElementById('eBirthCity').textContent = session.birthCity || '—';
     document.getElementById('eBloodType').textContent = session.bloodType || '—';
-    document.getElementById('busMakkah').textContent = session.busMakkah || '—';
-    document.getElementById('busMadinah').textContent = session.busMadinah || '—';
     document.getElementById('eJob').textContent = session.job || '—';
     document.getElementById('eMarja').textContent = session.marja || '—';
     document.getElementById('eVeteran').textContent = session.veteran || '—';
@@ -108,7 +106,7 @@
     const toggleBtn = document.getElementById('toggleDetailsBtn');
     toggleBtn.onclick = () => {
       extra.classList.toggle('show');
-      toggleBtn.textContent = extra.classList.contains('show') ? 'بستن' : 'مشاهده کامل';
+      toggleBtn.textContent = extra.classList.contains('show') ? 'بستن' : 'مشاهده جزئیات';
     };
   </script>
 </body>

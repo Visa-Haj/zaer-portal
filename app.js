@@ -20,6 +20,23 @@ function redirectIfAdmin() {
   if (s && s.role === 'admin') location.href = 'admin.html';
 }
 
+function applyPortalBackground() {
+  if (CONFIG.PORTAL_BG_URL) {
+    document.body.classList.add('portal-bg');
+    document.body.style.backgroundImage =
+      `linear-gradient(rgba(234,246,238,.88), rgba(234,246,238,.88)), url('${CONFIG.PORTAL_BG_URL}')`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
+  }
+}
+
+const FIELD_ICONS = {
+  code: '🆔', birthDate: '🎂', mobile: '📱', passportNumber: '📘',
+  education: '🎓', birthCity: '🏙️', bloodType: '🩸', job: '💼',
+  marja: '🕌', veteran: '🎗️', bus: '🚌', room: '🚪', nationalCode: '🪪'
+};
+
 async function api(action, params) {
   const s = getSession();
   const usp = new URLSearchParams(Object.assign({ action }, params || {}));
@@ -64,11 +81,11 @@ function personCardHtml(p) {
         <div class="person-card-info">
           <div class="name">${p.firstName} ${p.lastName}</div>
           <div class="meta">
-            کد زائر: ${p.code}<br>
-            شماره موبایل: ${formatMobile(p.mobile)}<br>
-            محل تولد: ${p.birthCity || '—'}<br>
-            تاریخ تولد: ${p.birthDate || '—'}<br>
-            تحصیلات: ${p.education || '—'}
+            🆔 کد زائر: ${p.code}<br>
+            📱 شماره موبایل: ${formatMobile(p.mobile)}<br>
+            🏙️ محل تولد: ${p.birthCity || '—'}<br>
+            🎂 تاریخ تولد: ${p.birthDate || '—'}<br>
+            🎓 تحصیلات: ${p.education || '—'}
           </div>
         </div>
       </div>
@@ -114,6 +131,24 @@ function openImageFullscreen(src) {
   overlay.innerHTML = `<img src="${src}" alt="نمایش کامل عکس">`;
   overlay.onclick = () => overlay.remove();
   document.body.appendChild(overlay);
+}
+
+function openFileFullscreen(url, isPdf, fileName, label) {
+  const overlay = document.createElement('div');
+  overlay.className = 'file-viewer-overlay';
+  overlay.innerHTML = `
+    <div class="file-viewer-top">
+      <button class="btn btn-ghost" id="fvCloseBtn">✕ بستن</button>
+      <span>${label}</span>
+    </div>
+    <div class="file-viewer-body">
+      ${isPdf ? `<iframe src="${url}"></iframe>` : `<img src="${url}" alt="${label}">`}
+    </div>
+    <div class="file-viewer-bottom">
+      <a class="btn btn-primary" href="${url}" download="${fileName}">دانلود ${label}</a>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('fvCloseBtn').onclick = () => overlay.remove();
 }
 
 /* ---------------- تاریخ شمسی و قمری ---------------- */

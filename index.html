@@ -16,12 +16,8 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="center-page">
-    <div class="card login-card">
-      <h1>کارتابل زائران</h1>
-      <div class="caravan-line" id="caravanTitle"></div>
-      <div class="manager-line" id="managerName"></div>
-
+  <div class="center-page center-page-bottom">
+    <div class="card login-card login-card-glass">
       <form id="loginForm">
         <div class="field">
           <label for="code">کد زائر</label>
@@ -42,10 +38,8 @@
   <script src="app.js"></script>
   <script>
     clearSession();
-    document.getElementById('caravanTitle').textContent = CONFIG.CARAVAN_TITLE || '';
-    document.getElementById('managerName').textContent = CONFIG.MANAGER_NAME || '';
-    if (CONFIG.LOGO_URL) {
-      document.querySelector('.center-page').style.backgroundImage = `url('${CONFIG.LOGO_URL}')`;
+    if (CONFIG.LOGIN_BG_URL) {
+      document.querySelector('.center-page').style.backgroundImage = `url('${CONFIG.LOGIN_BG_URL}')`;
     }
 
     const form = document.getElementById('loginForm');

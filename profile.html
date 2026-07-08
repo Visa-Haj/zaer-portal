@@ -39,6 +39,7 @@
 
   <script src="config.js"></script>
   <script src="app.js"></script>
+  <script>applyPortalBackground();</script>
   <script>
     requireAdmin();
     const resultArea = document.getElementById('resultArea');
@@ -57,21 +58,21 @@
           <div class="profile-info">
             <h2>${p.firstName} ${p.lastName}</h2>
             <dl>
-              <dt>کد زائر</dt><dd>${p.code}</dd>
-              <dt>کد ملی</dt><dd>${p.nationalCode || '—'}</dd>
-              <dt>تاریخ تولد</dt><dd>${p.birthDate || '—'}</dd>
-              <dt>شماره موبایل</dt><dd>${formatMobile(p.mobile)}</dd>
-              <dt>شماره گذرنامه</dt><dd>${p.passportNumber || '—'}</dd>
-              <dt>گروه خونی</dt><dd>${p.bloodType || '—'}</dd>
-              <dt>تحصیلات</dt><dd>${p.education || '—'}</dd>
-              <dt>شهر محل تولد</dt><dd>${p.birthCity || '—'}</dd>
-              <dt>شغل</dt><dd>${p.job || '—'}</dd>
-              <dt>مرجع تقلید</dt><dd>${p.marja || '—'}</dd>
-              <dt>ایثارگری</dt><dd>${p.veteran || '—'}</dd>
-              <dt>اتوبوس مکه</dt><dd>${p.busMakkah || '—'}</dd>
-              <dt>اتاق مکه</dt><dd>${p.makkahRoom || '—'}</dd>
-              <dt>اتوبوس مدینه</dt><dd>${p.busMadinah || '—'}</dd>
-              <dt>اتاق مدینه</dt><dd>${p.madinahRoom || '—'}</dd>
+              <dt>🆔 کد زائر</dt><dd>${p.code}</dd>
+              <dt>🪪 کد ملی</dt><dd>${p.nationalCode || '—'}</dd>
+              <dt>📅 تاریخ تولد</dt><dd>${p.birthDate || '—'}</dd>
+              <dt>📱 شماره موبایل</dt><dd>${formatMobile(p.mobile)}</dd>
+              <dt>📘 شماره گذرنامه</dt><dd>${p.passportNumber || '—'}</dd>
+              <dt>🩸 گروه خونی</dt><dd>${p.bloodType || '—'}</dd>
+              <dt>🎓 تحصیلات</dt><dd>${p.education || '—'}</dd>
+              <dt>🏙️ شهر محل تولد</dt><dd>${p.birthCity || '—'}</dd>
+              <dt>💼 شغل</dt><dd>${p.job || '—'}</dd>
+              <dt>🕌 مرجع تقلید</dt><dd>${p.marja || '—'}</dd>
+              <dt>🎖️ ایثارگری</dt><dd>${p.veteran || '—'}</dd>
+              <dt>🚌 اتوبوس مکه</dt><dd>${p.busMakkah || '—'}</dd>
+              <dt>🛏️ اتاق مکه</dt><dd>${p.makkahRoom || '—'}</dd>
+              <dt>🚌 اتوبوس مدینه</dt><dd>${p.busMadinah || '—'}</dd>
+              <dt>🛏️ اتاق مدینه</dt><dd>${p.madinahRoom || '—'}</dd>
             </dl>
           </div>
         </div>
